@@ -39,7 +39,7 @@ class Component:
         self.image_shape = image_shape
         self.area = self.width * self.height
 
-        self.category = 'Compo'
+        self.category = 'Component'
         self.contain = []
 
         self.rect_ = None

@@ -65,16 +65,16 @@ def nesting_inspection(org, grey, compos, ffl_block):
 
 
 def compo_detection(input_img_path, output_root, uied_params,
-                    resize_by_height=600,
+                    resize_by_height=600, batch=False,
                     classifier=None, show=False):
 
-    start = time.clock()
+    start = time.time()
     name = input_img_path.split('/')[-1][:-4]
     ip_root = file.build_directory(pjoin(output_root, "ip"))
 
     # *** Step 1 *** pre-processing: read img -> get binary map
     org, grey = pre.read_img(input_img_path, resize_by_height)
-    binary = pre.binarization(org, grad_min=int(uied_params['min-grad']), show=True)
+    binary = pre.binarization(org, grad_min=int(uied_params['min-grad']), show=show)
 
     # *** Step 2 *** element detection
     det.rm_line(binary, show=show)
@@ -99,13 +99,14 @@ def compo_detection(input_img_path, output_root, uied_params,
     draw.draw_bounding_box(org, uicompos, show=show, name='nesting compo', write_path=pjoin(ip_root, 'result.jpg'))
     draw.draw_bounding_box(org, uicompos, write_path=pjoin(output_root, 'result.jpg'))
 
-    # *** Step 5 *** Image Inspection: recognize image -> remove noise in image -> binarize with larger threshold and reverse -> rectangular compo detection
+    # *** Step 5 *** Image Inspection: recognize image -> remove noise in image
+    # -> binarize with larger threshold and reverse -> rectangular compo detection
     # if classifier is not None:
     #     classifier['Image'].predict(seg.clipping(org, uicompos), uicompos)
     #     draw.draw_bounding_box_class(org, uicompos, show=show)
     #     uicompos = det.rm_noise_in_large_img(uicompos, org)
     #     draw.draw_bounding_box_class(org, uicompos, show=show)
-    #     det.detect_compos_in_img(uicompos, binary_org, org)
+    #     det.detect_compos_in_img(uicompos, binary, org)
     #     draw.draw_bounding_box(org, uicompos, show=show)
     # if classifier is not None:
     #     classifier['Noise'].predict(seg.clipping(org, uicompos), uicompos)
@@ -123,6 +124,7 @@ def compo_detection(input_img_path, output_root, uied_params,
     file.save_corners_json(pjoin(output_root, 'compo.json'), uicompos)
     # seg.dissemble_clip_img_fill(pjoin(output_root, 'clips'), org, uicompos)
 
-    print("[Compo Detection Completed in %.3f s] %s" % (time.clock() - start, input_img_path))
+    if not batch:
+        print("[Compo Detection Completed in %.3f s] %s" % (time.time() - start, input_img_path))
     if show:
         cv2.destroyAllWindows()

@@ -24,8 +24,9 @@ def draw_bounding_box_class(org, compos, color_map=C.COLOR, line=2, show=False, 
 
         corner = compo.put_bbox()
         board = cv2.rectangle(board, (corner[0], corner[1]), (corner[2], corner[3]), class_colors[compo.category], line)
-        # board = cv2.putText(board, compo_class[i], (corners[i][0]+5, corners[i][1]+20),
-        #                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, class_colors[compo_class[i]], 2)
+        if compo.category != 'Component':
+            board = cv2.putText(board, compo.category, (corner[0]+5, corner[1]+20),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, class_colors[compo.category], 2)
     if show:
         cv2.imshow(name, board)
         cv2.waitKey(0)

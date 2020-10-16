@@ -1,17 +1,16 @@
-import cv2
-import time
-import math
+import json
 import os
+import time
+
+import cv2
 import numpy as np
 import tensorflow as tf
-import json
 
-import detect_text_east.lib_east.locality_aware_nms as nms_locality
 import detect_text_east.lib_east.lanms as lanms
 import detect_text_east.lib_east.model as model
+from config.CONFIG import Config
 from detect_text_east.lib_east.icdar import restore_rectangle
 
-from config.CONFIG import Config
 cfg = Config()
 
 
@@ -257,7 +256,7 @@ def predict(sess, f_score, f_geometry, input_images, max_word_gap, resize_by_hei
     res_file = os.path.join(
         FLAGS.output_dir,
         '{}.json'.format(
-            os.path.basename(img_path).split('.')[0]))
+            '.'.join(os.path.basename(img_path).split('.')[:-1])))
 
     corners = []
     for box in boxes:
@@ -304,7 +303,7 @@ def load():
         sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True))
         ckpt_state = tf.train.get_checkpoint_state(FLAGS.checkpoint_path)
         model_path = os.path.join(FLAGS.checkpoint_path, os.path.basename(ckpt_state.model_checkpoint_path))
-        # print('Restore from {}'.format(model_path))
+        print('Restore from {}'.format(model_path))
         saver.restore(sess, model_path)
 
     return sess, f_score, f_geometry, input_images

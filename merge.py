@@ -168,7 +168,7 @@ def merge_intersected_compos(org, compos, max_gap=(0, 0), merge_class=None):
 
 
 def incorporate(img_path, compo_path, text_path, output_root, params,
-                resize_by_height=None, show=False):
+                resize_by_height=None, show=False, batch=False, out_suffix=''):
     org = cv2.imread(img_path)
 
     compos = []
@@ -204,11 +204,11 @@ def incorporate(img_path, compo_path, text_path, output_root, params,
     board = draw_bounding_box_class(org_resize, compos_merged, name='merged paragraph', show=show)
 
     draw_bounding_box_non_text(org_resize, compos_merged, org_shape=org.shape, show=show)
-    compos_json = save_corners_json(pjoin(output_root, 'compo.json'), background, compos_merged, org_resize.shape)
+    compos_json = save_corners_json(pjoin(output_root, 'compo{}.json'.format(out_suffix)), background, compos_merged, org_resize.shape)
     dissemble_clip_img_fill(pjoin(output_root, 'clips'), org_resize, compos_json)
-    cv2.imwrite(pjoin(output_root, 'result.jpg'), board)
+    cv2.imwrite(pjoin(output_root, 'result{}.jpg'.format(out_suffix)), board)
 
-    print('Merge Complete and Save to', pjoin(output_root, 'result.jpg'))
-    print(time.ctime(), '\n')
+    if not batch:
+        print('Merge Complete and Save to', pjoin(output_root, 'result.jpg'))
     if show:
         cv2.destroyAllWindows()
